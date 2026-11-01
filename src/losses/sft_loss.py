@@ -1,8 +1,7 @@
 ################################################################
 #                    SFT loss 
 ################################################################
-
-import torch 
+ 
 import torch.nn as nn
 
 
@@ -11,13 +10,13 @@ class SFTLoss(nn.Module):
         super().__init__()
 
     def forward(self, logits, targets, loss_mask=None): 
-
+  
         if loss_mask is None: 
             if targets is None: 
                 loss = None 
 
             else: 
-                B,T,C = logits.shape 
+                B,T,C = logits.shape   
                 logits_flat = logits.reshape(B*T, C)
                 target_flat = targets.reshape(B*T)
                 loss = nn.functional.cross_entropy(logits_flat, target_flat)
@@ -27,11 +26,12 @@ class SFTLoss(nn.Module):
             logits_flat = logits.reshape(B*T, C)
             target_flat = targets.reshape(B*T)
             loss_mask_flat = loss_mask.reshape(B*T).float()
-            loss_per_token = nn.functional.cross_entropy(logits_flat,target_flat,reduction="none")
+            loss_per_token = nn.functional.cross_entropy(logits_flat,target_flat,reduction="none") # without avereging losses 
             denominator = loss_mask_flat.sum()
             if denominator.item() == 0:
                 raise ValueError("No supervised tokens in the batch.")
             loss = (loss_per_token * loss_mask_flat ).sum() / denominator
+
         return loss 
 
 

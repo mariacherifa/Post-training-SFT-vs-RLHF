@@ -37,7 +37,7 @@ def sample_data():
 def build_vocab(data):
 
     # Include all characters introduced by formatting
-    texts = [get_full_text(example) for example in data]
+    texts = [get_full_text(example, task = "SFT") for example in data]
 
     chars = sorted(set("".join(texts)))
 
@@ -103,7 +103,7 @@ def test_shift(dataset, sample_data):
 
     x, y, loss_mask = dataset[0]
 
-    full_text = get_full_text(sample_data[0])
+    full_text = get_full_text(sample_data[0], task = "SFT")
     tokens = encode(full_text, dataset.stoi)
 
     n = min(len(tokens) - 1, dataset.block_size)
@@ -123,8 +123,8 @@ def test_loss_mask(dataset, sample_data):
 
     x, y, loss_mask = dataset[0]
 
-    prompt, response = get_prompt_response(sample_data[0])
-    full_text = get_full_text(sample_data[0])
+    prompt, response = get_prompt_response(sample_data[0], task = "SFT")
+    full_text = get_full_text(sample_data[0],task = "SFT")
 
     prompt_len = len(encode(prompt, dataset.stoi))
     seq_len = min(
@@ -160,7 +160,7 @@ def test_padding(dataset, sample_data):
 
     x, y, loss_mask = dataset[0]
 
-    full_text = get_full_text(sample_data[0])
+    full_text = get_full_text(sample_data[0], task = "SFT")
     seq_len = len(encode(full_text, dataset.stoi)) - 1
 
     assert torch.all(x[seq_len:] == 0)
@@ -188,7 +188,7 @@ def test_truncation(tmp_path):
 
     itos, stoi = build_vocab(data)
 
-    prompt, _ = get_prompt_response(data[0])
+    prompt, _ = get_prompt_response(data[0], task = "SFT")
     prompt_len = len(encode(prompt, stoi))
 
     block_size = prompt_len + 2

@@ -8,7 +8,9 @@ from src.models.policy import load_policy
 from tinygpt.model import TinyGPT
 
 
-# test 1 : model TinyGPT well imported 
+# -------------------------------------------------------
+# 1. TinyGPT well imported
+# -------------------------------------------------------
 device="cpu"
 
 def test_load_policy(tmp_path): 

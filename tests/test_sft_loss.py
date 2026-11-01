@@ -18,7 +18,9 @@ loss_mask = torch.tensor([
 ], dtype=torch.float)
 
 
-# Test shapes
+# -------------------------------------------------------
+# 1. Test shapes
+# -------------------------------------------------------
 
 def test_shapes(): 
     loss_model = SFTLoss()
@@ -44,7 +46,9 @@ def test_without_mask():
     torch.testing.assert_close(loss_sft, expected_loss)
 
 
-# Test : masking works 
+# -------------------------------------------------------
+# 2. Test masking
+# -------------------------------------------------------
 
 def test_masked_loss():
 
@@ -72,7 +76,9 @@ def test_masked_loss():
     torch.testing.assert_close(loss_sft, expected_loss)
 
 
-# test : gradient computations 
+# -------------------------------------------------------
+# 2. Test gradient computations
+# -------------------------------------------------------
 
 def test_backward():
     # Use fresh logits to isolate this test

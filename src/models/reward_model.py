@@ -7,6 +7,7 @@ import torch
 import torch.nn  as nn 
 from tinygpt.transformer import BlockTransformer
 
+
 class RewardModel(nn.Module): 
     def __init__(self, n_embd, num_heads, block_size,vocab_size, dropout, num_layer):
         super().__init__()
@@ -39,7 +40,7 @@ class RewardModel(nn.Module):
         last_hidden_representation = x[Batch_index, last_indices,: ]
 
 
-        reward = self.reward_head(last_hidden_representation)
+        reward = self.reward_head(last_hidden_representation).squeeze(-1)
 
         return reward
 

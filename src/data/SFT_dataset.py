@@ -22,7 +22,8 @@ class SFTDataset(Dataset):
         self.itos = itos
         self.stoi = stoi
 
-        # Load instruction-response examples
+        # Load instruction-response examples 
+
         self.examples = load_data(path)
 
     def __len__(self):
@@ -30,14 +31,14 @@ class SFTDataset(Dataset):
 
     def __getitem__(self, index):
 
-        # --------------------------------------------------------
-        # 1. Get instruction and response
-        # --------------------------------------------------------
+        # Get instruction and response
 
         example = self.examples[index]
 
+        # Seperate prompt and response 
+
         prompt, response = get_prompt_response(example, task = "SFT")
-        full_text = get_full_text(example, task = "SFL")
+        full_text = get_full_text(example, task = "SFT")
 
         # Ensure correct alignment for loss masking
         if full_text != prompt + response:
@@ -45,9 +46,7 @@ class SFTDataset(Dataset):
                 "full_text must equal prompt + response."
             )
 
-        # --------------------------------------------------------
-        # 2. Encode the text
-        # --------------------------------------------------------
+        # Encode the text
 
         prompt_encoded = encode(prompt, self.stoi)
         full_text_encoded = encode(full_text, self.stoi)
@@ -60,48 +59,35 @@ class SFTDataset(Dataset):
         if len(full_text_encoded) <= prompt_len:
             raise ValueError("Response cannot be empty.")
 
-        # --------------------------------------------------------
-        # 3. Check prompt length
-        # --------------------------------------------------------
-
+        # Check prompt length
         # We must keep at least one response target.
+
         if prompt_len > self.block_size:
             raise ValueError(
                 "Prompt is too long for the block_size."
             )
 
-        # --------------------------------------------------------
-        # 4. Truncate sequence
-        # --------------------------------------------------------
-
+       
         # Keep block_size + 1 tokens because x and y
         # will be shifted relative to each other.
 
         tokens = full_text_encoded[:self.block_size + 1]
 
-        # --------------------------------------------------------
-        # 5. Construct x and y
-        # --------------------------------------------------------
+        # Construct x and y
 
         x = tokens[:-1]
         y = tokens[1:]
 
         seq_len = len(x)
 
-        # --------------------------------------------------------
-        # 6. Construct loss mask
-        # --------------------------------------------------------
-
-        # Ignore prompt targets.
+        #  Construct loss mask : Ignore prompt,
         # Start supervising at the first response token.
 
         loss_mask = [0] * (prompt_len - 1)
 
         loss_mask += [1] * (seq_len - len(loss_mask))
 
-        # --------------------------------------------------------
-        # 7. Padding
-        # --------------------------------------------------------
+        # Padding
 
         pad_len = self.block_size - seq_len
 
@@ -110,9 +96,7 @@ class SFTDataset(Dataset):
             y += [0] * pad_len
             loss_mask += [0] * pad_len
 
-        # --------------------------------------------------------
-        # 8. Return tensors
-        # --------------------------------------------------------
+        # Convert to tensors
 
         x = torch.tensor(x, dtype=torch.long)
         y = torch.tensor(y, dtype=torch.long)

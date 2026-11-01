@@ -10,6 +10,7 @@ from src.losses.sft_loss import SFTLoss
 class TrainSFT(nn.Module): 
     def __init__(self, model, num_epochs, optimizer, eval_every, device):
         super().__init__()
+
         self.model = model  
         self.optimizer = optimizer 
         self.num_epochs = num_epochs
@@ -23,7 +24,9 @@ class TrainSFT(nn.Module):
 
         total_loss = 0.0 
         total_tokens = 0
+
         for  x,y, loss_mask in train_loader: 
+            
             x = x.to(self.device)
             y = y.to(self.device)
             loss_mask = loss_mask.to(self.device)
@@ -58,6 +61,7 @@ class TrainSFT(nn.Module):
 
             with torch.no_grad():
                  for x,y, loss_mask in val_loader: 
+
                     x = x.to(self.device)
                     y = y.to(self.device)
                     loss_mask = loss_mask.to(self.device)

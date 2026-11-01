@@ -4,7 +4,7 @@
 ##################################################
 
 from torch.utils.data import Dataset
-from data.utils import load_data, get_prompt_response
+from .utils import load_data, get_prompt_response
 from tinygpt.data import encode
 import torch
 
@@ -34,6 +34,7 @@ class PreferenceDataset(Dataset):
         )
 
         # Check nonempty fields
+
         if not prompt:
             raise ValueError("Prompt cannot be empty.")
 
@@ -66,7 +67,7 @@ class PreferenceDataset(Dataset):
         chosen_ids = chosen_encoded + [0] * pad_len_cho
         rejected_ids = rejected_encoded + [0] * pad_len_rej
 
-        # Valid-token masks
+        # Valid-token masks to ignore padding
         chosen_mask = (
             [1] * len(chosen_encoded) + [0] * pad_len_cho
         )
