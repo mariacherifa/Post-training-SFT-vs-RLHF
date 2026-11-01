@@ -4,7 +4,7 @@
 
 import torch
 
-def ppo_loss(new_logprobs, old_logprobs, advantages, epsilon): 
+def PPO_Loss(new_logprobs, old_logprobs, advantages, epsilon): 
 
     rho_t = torch.exp(new_logprobs - old_logprobs)
 
