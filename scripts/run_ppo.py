@@ -137,7 +137,6 @@ def load_reward_model(checkpoint_path, policy_config, policy_stoi, device):
     reward_model.requires_grad_(False)
     reward_model.eval()
 
-    print("Trained reward model loaded:", checkpoint_path)
     return reward_model, arch
 
 
@@ -325,7 +324,7 @@ def main():
         if device.type == "mps" and not torch.backends.mps.is_available():
             raise RuntimeError("MPS was requested, but it is not available")
 
-    print("Device:", device)
+    
 
     # -------------------------------------------------------
     #  Paths and unique experiment directory
@@ -543,8 +542,7 @@ def main():
     save_metrics_csv(history, output_dir / "metrics.csv")
     #save_learning_curves(history, output_dir)
 
-    print("PPO checkpoint saved:", checkpoint_path)
-    print("Experiment results saved:", output_dir)
+    
     return history
 
 
