@@ -16,7 +16,7 @@ from src.data.SFT_dataset import SFTDataset
 
 
 # ============================================================
-# Helper 1: Initialize model and trainer
+#  Step 1:  Initialize model and trainer
 # ============================================================
 
 def create_trainer(tmp_path, num_epochs=1, lr=1e-3):
@@ -61,7 +61,7 @@ def create_trainer(tmp_path, num_epochs=1, lr=1e-3):
 
 
 # ============================================================
-# Helper 2: Create artificial data
+# Step 2: Create artificial data
 # ============================================================
 
 def create_loader(
@@ -211,14 +211,14 @@ def test_full_training(tmp_path):
 
 
 # ============================================================
-# Test 4: Model actually learns
+# Test 4: Model actually learns (loss decreases)
 # ============================================================
 
 def test_model_learns(tmp_path):
 
     torch.manual_seed(45)
 
-    model, trainer, config = create_trainer(
+    _, trainer, config = create_trainer(
         tmp_path,
         num_epochs=30,
         lr=2e-3
@@ -232,22 +232,23 @@ def test_model_learns(tmp_path):
         constant_token=5
     )
 
-    # 1. Measure loss BEFORE training
+    #  Measure loss BEFORE training
     initial_loss = trainer.evaluate(train_loader)
 
-    # 2. Train repeatedly on the same data
+    #  Train repeatedly on the same data
     for epoch in range(30):
         trainer.train_one_epoch(train_loader)
 
-    # 3. Measure loss AFTER training
+    #  Measure loss AFTER training
     final_loss = trainer.evaluate(train_loader)
 
     print(f"\nInitial loss: {initial_loss:.4f}")
     print(f"Final loss:   {final_loss:.4f}")
 
-    # 4. Check that the model learned
+    #   Check that the final loss is finite 
     assert math.isfinite(final_loss)
 
+    #  Check that the learnt
     assert final_loss < initial_loss, (
         f"Model did not learn: "
         f"initial={initial_loss:.4f}, "
@@ -302,7 +303,7 @@ def sample_data():
 
 def build_vocab(data):
 
-    texts = [get_full_text(example) for example in data]
+    texts = [get_full_text(example, task = "SFT") for example in data]
 
     chars = sorted(set("".join(texts)))
 
@@ -331,7 +332,7 @@ def dataset(tmp_path, sample_data):
     # Character-level tokenizer: reserve enough context
     # to fit the complete prompt-response examples.
     block_size = max(
-        len(get_full_text(example))
+        len(get_full_text(example, task = "SFT"))
         for example in sample_data
     )
 

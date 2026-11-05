@@ -20,6 +20,8 @@ class RewardModel(nn.Module):
         self.reward_head = nn.Linear(n_embd, 1)
 
     def forward(self,ids, attention_mask): 
+        # attention mask: masks padded parts in a sequence 
+        
         B,T = ids.shape 
         token_emb = self.embedding(ids)
         pos = torch.arange(T,  device=ids.device)
@@ -36,10 +38,10 @@ class RewardModel(nn.Module):
 
         Batch_index = torch.arange(B, device=ids.device)
         last_indices =  length_of_sequences  - 1
-
+    
         last_hidden_representation = x[Batch_index, last_indices,: ]
 
-
+   
         reward = self.reward_head(last_hidden_representation).squeeze(-1)
 
         return reward

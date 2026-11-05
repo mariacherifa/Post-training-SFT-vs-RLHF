@@ -7,7 +7,7 @@ import torch.nn as nn
 from src.losses.reward_loss import RewardLoss
 
 # -------------------------------------------------------
-#  Create toy Rewards loss
+#  Step 1: Create toy Rewards loss
 # -------------------------------------------------------
 
 @pytest.fixture
@@ -16,7 +16,7 @@ def reward_loss():
     return RewardLoss()
 
 # -------------------------------------------------------
-# 1. Test shapes
+# Test 1: Shapes
 # -------------------------------------------------------
 
 def test_shape(reward_loss): 
@@ -32,7 +32,7 @@ def test_shape(reward_loss):
     assert torch.isfinite(loss)
 
 # -------------------------------------------------------
-# 2. Test Gradient computations 
+# Test 2: Gradient computations 
 # -------------------------------------------------------
 
 def test_backward(reward_loss): 
@@ -52,7 +52,7 @@ def test_backward(reward_loss):
         assert parameter.grad is not None
 
 # -------------------------------------------------------
-# 3. Test loss values 
+#  Test 3: Loss values 
 # -------------------------------------------------------
 
 def test_loss_values(reward_loss): 
@@ -69,7 +69,7 @@ def test_loss_values(reward_loss):
     assert torch.allclose(loss, loss_computed)
 
 # -------------------------------------------------------
-# 3. Test loss ordering  
+#  Test 4: Loss ordering  
 # -------------------------------------------------------
 
 def test_loss_order(reward_loss): 

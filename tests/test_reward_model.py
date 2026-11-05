@@ -11,10 +11,11 @@ import math
 
 
 # -------------------------------------------------------
-#  Create a reward model 
+#  Step 1: Create a reward model 
 # -------------------------------------------------------
 @pytest.fixture
 def reward_model():
+
     text = "Hello Maria how are you"
     _, vocab_size, _, _ = build_vocab(text)
 
@@ -36,7 +37,7 @@ def reward_model():
     return model
 
 # -------------------------------------------------------
-#  Create toy example 
+#  Step 2: Create toy example 
 # -------------------------------------------------------
 
 @pytest.fixture
@@ -55,7 +56,7 @@ def sample_inputs():
     return ids, attention_mask
 
 # -------------------------------------------------------
-# Test 1: check the reward is scalar
+# Test 1: Reward is scalar
 # -------------------------------------------------------
 
 def test_scalar(reward_model, sample_inputs): 
@@ -71,7 +72,7 @@ def test_scalar(reward_model, sample_inputs):
 
 
 # -------------------------------------------------------
-# Test 2: reward is finite
+# Test 2: Reward is finite
 # -------------------------------------------------------
 
 def test_finite(reward_model, sample_inputs): 

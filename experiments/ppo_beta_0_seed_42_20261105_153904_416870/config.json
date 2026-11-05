@@ -1,0 +1,38 @@
+{
+  "sft_checkpoint_path": "/Users/mariacherifa/Desktop/post-training-LLM/checkpoints/tinygpt_sft.pt",
+  "reward_checkpoint_path": "/Users/mariacherifa/Desktop/post-training-LLM/checkpoints/reward_model.pt",
+  "train_data_path": "/Users/mariacherifa/Desktop/post-training-LLM/data/shp_processed/train_preferences.json",
+  "val_data_path": "/Users/mariacherifa/Desktop/post-training-LLM/data/shp_processed/validation_preferences.json",
+  "seed": 42,
+  "device": "mps",
+  "beta": 0.0,
+  "learning_rate": 1e-05,
+  "num_epochs": 2,
+  "eval_every": 1,
+  "ppo_updates": 2,
+  "max_new_tokens": 16,
+  "epsilon": 0.2,
+  "gamma": 1.0,
+  "batch_size": 1,
+  "max_train_examples": 30,
+  "max_val_examples": 10,
+  "num_train_prompts": 30,
+  "num_val_prompts": 10,
+  "block_size": 2048,
+  "model_config": {
+    "n_embd": 128,
+    "vocab_size": 243,
+    "num_heads": 4,
+    "block_size": 2048,
+    "num_layers": 4,
+    "dropout": 0.1
+  },
+  "reward_model_config": {
+    "n_embd": 128,
+    "num_heads": 4,
+    "block_size": 2048,
+    "vocab_size": 243,
+    "dropout": 0.1,
+    "num_layers": 4
+  }
+}

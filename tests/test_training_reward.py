@@ -6,10 +6,11 @@ import pytest
 import torch.nn as nn 
 from src.trainers.train_reward import TrainReward
 from torch.utils.data import DataLoader, TensorDataset
+import math 
 
 
 # -------------------------------------------------------
-# 1. Create a toy reward model
+# Step 1: Create a toy reward model
 # -------------------------------------------------------
 
 class ToyRewardModel(nn.Module):
@@ -35,7 +36,7 @@ class ToyRewardModel(nn.Module):
 
 
 # -------------------------------------------------------
-# 2. Create an artificial DataLoader
+# Step 2: Create an artificial DataLoader
 # -------------------------------------------------------
 
 @pytest.fixture
@@ -75,7 +76,7 @@ def train_loader():
 
 
 # -------------------------------------------------------
-# 3. Initialize the trainer
+# Step 3: Initialize the trainer
 # -------------------------------------------------------
 
 @pytest.fixture
@@ -100,7 +101,7 @@ def trainer():
 
 
 # -------------------------------------------------------
-# Test one epoch training
+# Test 1: One epoch training
 # -------------------------------------------------------
 
 def test_one_epoch_train(trainer, train_loader):
@@ -133,7 +134,7 @@ def test_one_epoch_train(trainer, train_loader):
 
 
 # -------------------------------------------------------
-# Test evaluation 
+# Test 2: Evaluation 
 # -------------------------------------------------------
 
 
@@ -148,13 +149,15 @@ def test_evaluation(trainer, train_loader):
     ]
 
     # Train for one epoch
-    loss = trainer.evaluate(train_loader)
+    loss, accuracy = trainer.evaluate(train_loader)
 
     # Verify the loss
     assert isinstance(loss, float)
+    assert accuracy is not None 
+    assert math.isfinite(accuracy)
     assert torch.isfinite(torch.tensor(loss))
 
-    # essert evaluation mode 
+    # check evaluation mode 
 
     assert not model.training
 
@@ -170,7 +173,7 @@ def test_evaluation(trainer, train_loader):
 
 
 # -------------------------------------------------------
-# Test full training 
+# Test 3: Full training loop
 # -------------------------------------------------------
 
 
@@ -185,7 +188,8 @@ def test_full_train(trainer, train_loader):
     assert set(history.keys()) == {
         "epoch",
         "train_loss",
-        "val_loss"
+        "val_loss", 
+        "val_accuracy"
     }
 
     # num_epochs=3, val_every=2
@@ -194,6 +198,7 @@ def test_full_train(trainer, train_loader):
     # Check number of recorded losses
     assert len(history["train_loss"]) == 2
     assert len(history["val_loss"]) == 2
+    assert len(history["val_accuracy"]) == 2
 
     # Check losses are finite
     for loss in history["train_loss"]:
@@ -201,5 +206,8 @@ def test_full_train(trainer, train_loader):
 
     for loss in history["val_loss"]:
         assert torch.isfinite(torch.tensor(loss))
+
+    for accu in history["val_accuracy"]:
+        assert torch.isfinite(torch.tensor(accu))
 
 

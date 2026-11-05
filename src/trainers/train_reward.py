@@ -1,5 +1,5 @@
 ######################################################################
-#                        Train reward 
+#                          Train reward 
 ######################################################################
 
 import torch 
@@ -17,6 +17,8 @@ class TrainReward(nn.Module):
         self.val_every = val_every
         self.device = device
         self.criterion = RewardLoss()
+
+    # Train one epoch with data like (chosen, rejected, chosen_mask, rejected_mask)
 
     def train_one_epoch(self, train_loader): 
         self.model.train()
@@ -53,11 +55,14 @@ class TrainReward(nn.Module):
 
         return  total_avg_loss
 
+    #  Evaluation function 
+
     def evaluate(self,val_loader): 
         self.model.eval()
         
         total_loss = 0.0
         total_samples = 0 
+        correct = 0
 
         with torch.no_grad():
             for chosen_ids, rejected_ids, chosen_mask, rejected_mask in val_loader:
@@ -74,25 +79,30 @@ class TrainReward(nn.Module):
 
                 batch_size = chosen_ids.size(0)
                 total_loss += loss.item() * batch_size
+                correct += (chosen_rewards > rejected_rewards).sum().item()
                 total_samples += batch_size
         
         total_avg_loss = total_loss / total_samples
+        val_accuracy = correct / total_samples
         
-        return  total_avg_loss
+        return  total_avg_loss, val_accuracy
+
+    #  Train for many epochs 
 
     def full_train(self, train_loader, val_loader): 
 
-        History = {"epoch": [], "train_loss":[], "val_loss":[]}
+        History = {"epoch": [], "train_loss":[], "val_loss":[], "val_accuracy" : []}
 
         for epoch in range(self.num_epochs): 
             train_loss = self.train_one_epoch(train_loader)
 
             if (epoch + 1)% self.val_every == 0 or epoch == self.num_epochs - 1:
-                val_loss = self.evaluate(val_loader)
+                val_loss, val_accuracy = self.evaluate(val_loader)
 
                 History["epoch"].append(epoch + 1)
                 History["train_loss"].append(train_loss)
                 History["val_loss"].append(val_loss)
+                History["val_accuracy"].append(val_accuracy)
 
 
         return History  

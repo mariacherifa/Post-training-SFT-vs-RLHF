@@ -11,7 +11,7 @@ def cumulative_future_returns(token_rewards, gamma = 1):
 
     running_return = torch.zeros_like(token_rewards[:, 0])
 
-    for i in range(T, 1, -1):
+    for i in range(T-1, -1, -1):
         running_return = token_rewards[:, i] + gamma * running_return
         returns[:,i] = running_return
     

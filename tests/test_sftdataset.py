@@ -13,7 +13,7 @@ from tinygpt.data import encode
 
 
 # -------------------------------------------------------
-# 1. Create a small artificial dataset
+# Step 1: Create a small artificial dataset
 # -------------------------------------------------------
 
 @pytest.fixture
@@ -31,7 +31,7 @@ def sample_data():
 
 
 # -------------------------------------------------------
-# 2. Create a toy vocabulary
+# Step 2:  Create a toy tokenizer
 # -------------------------------------------------------
 
 def build_vocab(data):
@@ -48,7 +48,7 @@ def build_vocab(data):
 
 
 # -------------------------------------------------------
-# 3. Create the dataset
+# Step 3: Create the dataset
 # -------------------------------------------------------
 
 @pytest.fixture
@@ -86,13 +86,13 @@ def test_shapes(dataset):
 
     x, y, loss_mask = dataset[0]
 
-    assert x.shape == (128,)
-    assert y.shape == (128,)
-    assert loss_mask.shape == (128,)
+    assert x.shape == (128,)     # x.shape should be (block_size, )
+    assert y.shape == (128,)     # y.shape should be (block_size, )
+    assert loss_mask.shape == (128,)          # loss_mask.shape should be (block_size, )
 
-    assert x.dtype == torch.long
-    assert y.dtype == torch.long
-    assert loss_mask.dtype == torch.long
+    assert x.dtype == torch.long       # x.dtype should be torch.long 
+    assert y.dtype == torch.long       # same for y 
+    assert loss_mask.dtype == torch.long     # same for loss_mask
 
 
 # -------------------------------------------------------
@@ -101,18 +101,18 @@ def test_shapes(dataset):
 
 def test_shift(dataset, sample_data):
 
-    x, y, loss_mask = dataset[0]
+    x, y, _ = dataset[0]
 
     full_text = get_full_text(sample_data[0], task = "SFT")
     tokens = encode(full_text, dataset.stoi)
 
     n = min(len(tokens) - 1, dataset.block_size)
 
-    expected_x = torch.tensor(tokens[:n])
+    expected_x = torch.tensor(tokens[:n])  
     expected_y = torch.tensor(tokens[1:n+1])
 
-    assert torch.equal(x[:n], expected_x)
-    assert torch.equal(y[:n], expected_y)
+    assert torch.equal(x[:n], expected_x)     # x is build as tokens[:n]
+    assert torch.equal(y[:n], expected_y)     # y is build as tokens[1:n+1]
 
 
 # -------------------------------------------------------
@@ -121,12 +121,13 @@ def test_shift(dataset, sample_data):
 
 def test_loss_mask(dataset, sample_data):
 
-    x, y, loss_mask = dataset[0]
+    _, _, loss_mask = dataset[0]
 
-    prompt, response = get_prompt_response(sample_data[0], task = "SFT")
+    prompt, _ = get_prompt_response(sample_data[0], task = "SFT")
     full_text = get_full_text(sample_data[0],task = "SFT")
 
     prompt_len = len(encode(prompt, dataset.stoi))
+    
     seq_len = min(
         len(encode(full_text, dataset.stoi)) - 1,
         dataset.block_size

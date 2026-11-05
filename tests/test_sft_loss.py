@@ -7,6 +7,9 @@ import torch.nn as nn
 import pytest 
 from src.losses.sft_loss import SFTLoss
 
+# -------------------------------------------------------
+# Step 1: Create a toy example 
+# -------------------------------------------------------
 
 torch.manual_seed(42)
 
@@ -19,7 +22,7 @@ loss_mask = torch.tensor([
 
 
 # -------------------------------------------------------
-# 1. Test shapes
+# Test 1: Shapes
 # -------------------------------------------------------
 
 def test_shapes(): 
@@ -47,7 +50,7 @@ def test_without_mask():
 
 
 # -------------------------------------------------------
-# 2. Test masking
+# Test 2: Masking
 # -------------------------------------------------------
 
 def test_masked_loss():
@@ -59,6 +62,7 @@ def test_masked_loss():
     B, T, V = logits.shape
 
     # Compute the loss for every token
+
     loss_per_token = nn.functional.cross_entropy(
         logits.reshape(B*T, V),
         targets.reshape(B*T),
@@ -77,10 +81,11 @@ def test_masked_loss():
 
 
 # -------------------------------------------------------
-# 2. Test gradient computations
+# Test 3: Gradient computations
 # -------------------------------------------------------
 
 def test_backward():
+    
     # Use fresh logits to isolate this test
     test_logits = torch.randn(
         (2, 4, 3),

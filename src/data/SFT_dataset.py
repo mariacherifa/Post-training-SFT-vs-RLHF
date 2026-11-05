@@ -1,4 +1,3 @@
-
 #########################################################################
 #                           SFT Dataset
 #########################################################################
@@ -23,7 +22,6 @@ class SFTDataset(Dataset):
         self.stoi = stoi
 
         # Load instruction-response examples 
-
         self.examples = load_data(path)
 
     def __len__(self):
@@ -31,7 +29,7 @@ class SFTDataset(Dataset):
 
     def __getitem__(self, index):
 
-        # Get instruction and response
+        # Get a complete example instruction and response
 
         example = self.examples[index]
 
@@ -41,12 +39,13 @@ class SFTDataset(Dataset):
         full_text = get_full_text(example, task = "SFT")
 
         # Ensure correct alignment for loss masking
+
         if full_text != prompt + response:
             raise ValueError(
                 "full_text must equal prompt + response."
             )
 
-        # Encode the text
+        # Encode the text with pretrained tokenizer
 
         prompt_encoded = encode(prompt, self.stoi)
         full_text_encoded = encode(full_text, self.stoi)
@@ -60,7 +59,6 @@ class SFTDataset(Dataset):
             raise ValueError("Response cannot be empty.")
 
         # Check prompt length
-        # We must keep at least one response target.
 
         if prompt_len > self.block_size:
             raise ValueError(
@@ -68,8 +66,7 @@ class SFTDataset(Dataset):
             )
 
        
-        # Keep block_size + 1 tokens because x and y
-        # will be shifted relative to each other.
+        # Keep block_size + 1 tokens because x and y will be shifted relative to each other.
 
         tokens = full_text_encoded[:self.block_size + 1]
 
@@ -78,10 +75,9 @@ class SFTDataset(Dataset):
         x = tokens[:-1]
         y = tokens[1:]
 
-        seq_len = len(x)
+        seq_len = len(y)
 
-        #  Construct loss mask : Ignore prompt,
-        # Start supervising at the first response token.
+        #  Construct loss mask : Ignore prompt, start supervising at the first response token.
 
         loss_mask = [0] * (prompt_len - 1)
 

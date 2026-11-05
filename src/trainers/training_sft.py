@@ -11,12 +11,14 @@ class TrainSFT(nn.Module):
     def __init__(self, model, num_epochs, optimizer, eval_every, device):
         super().__init__()
 
-        self.model = model  
         self.optimizer = optimizer 
         self.num_epochs = num_epochs
         self.eval_every = eval_every
         self.loss_fn = SFTLoss()
-        self.device = device 
+        self.device = torch.device(device) 
+        self.model = model.to(self.device) 
+
+    # Training one epoch 
 
     def train_one_epoch(self,train_loader): 
 
@@ -32,6 +34,7 @@ class TrainSFT(nn.Module):
             loss_mask = loss_mask.to(self.device)
 
             self.optimizer.zero_grad()
+
 
             _, logits = self.model(x,y)
 
@@ -52,6 +55,8 @@ class TrainSFT(nn.Module):
 
         return total_avg_loss
 
+
+    # Evaluation function 
 
     def evaluate(self,val_loader): 
 
@@ -81,8 +86,11 @@ class TrainSFT(nn.Module):
             total_avg_loss = total_loss/total_tokens
             return total_avg_loss
 
+    # Training for many epochs
 
     def full_training_loop(self, train_loader, val_loader): 
+
+        # History to store relevant metrics 
 
         History = {"epoch": [], "train_loss":[], "val_loss":[]}
 

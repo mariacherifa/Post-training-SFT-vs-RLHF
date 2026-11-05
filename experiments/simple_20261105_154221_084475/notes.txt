@@ -1,0 +1,3 @@
+Experiment 1 compares RESPONSE-ONLY teacher-forced cross entropy on the same accepted answers. Train/validation CE are measured AFTER training at final checkpoints; they are not epoch-wise PPO training losses. Lower CE means better likelihood on accepted responses, not necessarily better human preference.
+Experiment 2 uses the SAME learned reward model used in PPO optimization; score is a proxy, not independent quality. Sampled mean log(pi_beta/pi_SFT) on tokens drawn from pi_beta is an MC estimator of per-token KL; it may be negative with a small sample. Prompt sets, decoding length and seed are fixed.
+PPO clipped policy losses and SFT CE are NOT comparable as raw objectives.
