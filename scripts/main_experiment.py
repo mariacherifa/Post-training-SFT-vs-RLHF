@@ -225,7 +225,7 @@ def save_results(rows, output_dir):
     plt.savefig(output_dir / "2_objective_vs_beta.png")
     plt.close()
 
-    # Experiment 2, plot B: keep the original sampled KL diagnostic.
+    # Experiment 2, plot B: sampled KL diagnostic.
     plt.figure(figsize=(7, 4))
     plt.plot(betas, [row["sampled_kl"] for row in ppo_rows], marker="o")
     plt.xlabel("KL regularization coefficient beta")
