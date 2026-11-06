@@ -125,9 +125,9 @@ $$
 The clipped policy loss is minimized:
 
 $$
-\mathcal L_{\mathrm{PPO}}(\theta)=-\mathbb E_t\left[
+\mathcal{L}_{\mathrm{PPO}}(\theta)=-\mathbb{E}_t\left[
 \min\left(\rho_t(\theta)A_t,
-\operatorname{clip}(\rho_t(\theta),1-\epsilon,1+\epsilon)A_t\right)
+\text{clip}(\rho_t(\theta),1-\epsilon,1+\epsilon)A_t\right)
 \right],
 \qquad
 \rho_t(\theta)=\exp\left(\log\pi_\theta-\log\pi_{\mathrm{old}}\right).
