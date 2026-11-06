@@ -76,10 +76,8 @@ The original experiment used a 128-character context and a vocabulary of 90 char
 Using a chosen response from a Stanford Human Preferences (SHP) pair, construct an instruction/response sequence. Optimize the language model using a **response-only loss mask** so prompt tokens are excluded from the SFT objective:
 
 $$
-\mathcal L_{\mathrm{SFT}}(\theta)
-= -\frac{\sum_{b,t} m_{b,t}\log\pi_\theta(y_{b,t}\mid y_{b,<t})}
-        {\sum_{b,t}m_{b,t}}.
-$$
+\mathcal{L}_{\mathrm{SFT}}(\theta)
+= -\frac{\sum_{b,t} m_{b,t}\log\pi_\theta(y_{b,t}\mid y_{b,<t})}{\sum_{b,t}m_{b,t}}.$$
 
 The implementation provides `SFTDataset`, `SFTLoss`, and `TrainSFT`, with separate train/validation loops and saved SFT checkpoints.
 
