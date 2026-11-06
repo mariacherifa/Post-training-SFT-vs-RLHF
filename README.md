@@ -75,11 +75,11 @@ The original experiment used a 128-character context and a vocabulary of 90 char
 
 Using a chosen response from a Stanford Human Preferences (SHP) pair, construct an instruction/response sequence. Optimize the language model using a **response-only loss mask** so prompt tokens are excluded from the SFT objective:
 
-\[
+$$
 \mathcal L_{\mathrm{SFT}}(\theta)
 = -\frac{\sum_{b,t} m_{b,t}\log\pi_\theta(y_{b,t}\mid y_{b,<t})}
         {\sum_{b,t}m_{b,t}}.
-\]
+$$
 
 The implementation provides `SFTDataset`, `SFTLoss`, and `TrainSFT`, with separate train/validation loops and saved SFT checkpoints.
 
@@ -87,10 +87,10 @@ The implementation provides `SFTDataset`, `SFTLoss`, and `TrainSFT`, with separa
 
 Each SHP example supplies an instruction, a preferred (`chosen`) response, and a non-preferred (`rejected`) response. The reward model produces a scalar score for each complete sequence. It is trained with a pairwise Bradley–Terry objective:
 
-\[
+$$
 \mathcal L_{\mathrm{RM}}(\phi)
 = -\mathbb E\left[\log\sigma\big(R_\phi(x,y^+)-R_\phi(x,y^-)\big)\right].
-\]
+$$
 
 `RewardModel` uses a Transformer backbone and a scalar reward head; `RewardLoss` and `TrainReward` implement the optimization. A separate evaluation script measures held-out preference accuracy, pairwise loss, and reward margins.
 
@@ -107,33 +107,33 @@ PPO uses four models:
 
 For each sampled response token, the rollout stores \(\log\pi_{\mathrm{old}}(y_t\mid s_t)\). The sampled KL-penalty reward is
 
-\[
+$$
 r_t^{\mathrm{KL}}=-\beta\left(\log\pi_{\mathrm{old}}(y_t\mid s_t)-\log\pi_{\mathrm{ref}}(y_t\mid s_t)\right).
-\]
+$$
 
 The reward model adds a **terminal sequence reward** at the final generated token:
 
-\[
+$$
 r_t=r_t^{\mathrm{KL}}+\mathbf 1_{\{t=T\}}R_\phi(x,y).
-\]
+$$
 
 The current implementation uses discounted Monte Carlo returns and advantages:
 
-\[
+$$
 G_t=\sum_{k=t}^{T}\gamma^{k-t}r_k,
 \qquad A_t=G_t-V_\psi(s_t).
-\]
+$$
 
 The clipped policy loss is minimized:
 
-\[
+$$
 \mathcal L_{\mathrm{PPO}}(\theta)=-\mathbb E_t\left[
 \min\left(\rho_t(\theta)A_t,
 \operatorname{clip}(\rho_t(\theta),1-\epsilon,1+\epsilon)A_t\right)
 \right],
 \qquad
 \rho_t(\theta)=\exp\left(\log\pi_\theta-\log\pi_{\mathrm{old}}\right).
-\]
+$$
 
 The value model is fitted to fixed rollout returns with mean squared error. The policy and value model have separate optimizers, and multiple optimization passes can be performed over one rollout. **Generalized advantage estimation (GAE) is not part of the current training objective.**
 
